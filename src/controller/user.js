@@ -49,7 +49,27 @@ const userLogin = async (userName, password) => {
 }
 
 // 管理员详情列表
-const getAdminInfo = async (author) => {
+const getAdminInfo = async (author, pageNo, pageSize) => {
+  const result = await User.findAndCountAll({
+    where: {
+      userName: author,
+    },
+    include: [
+      {
+        model: Blog,
+        limit: Number(pageSize),
+        offset: Number((pageNo - 1) * pageSize),
+        order: [['id', 'desc']],
+      },
+    ],
+  })
+  return new SuccessModel({
+    data: result.rows.map((item) => item.dataValues)[0],
+  })
+}
+
+// 获取管理员详情列表总数
+const getAdminInfoTotal = async (author) => {
   const result = await User.findAndCountAll({
     where: {
       userName: author,
@@ -61,9 +81,14 @@ const getAdminInfo = async (author) => {
     ],
   })
   return new SuccessModel({
-    count: result.count,
-    data: result.rows.map((item) => item.dataValues),
+    total: result.rows.map((item) => item.dataValues)[0].blogs.length,
   })
 }
 
-module.exports = { isExist, userRegister, userLogin, getAdminInfo }
+module.exports = {
+  isExist,
+  userRegister,
+  userLogin,
+  getAdminInfo,
+  getAdminInfoTotal,
+}

@@ -4,37 +4,69 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
 // 获取博客列表
-const getBlogs = async (pageNo, pageSize) => {
-  const result = await Blog.findAndCountAll({
-    //  where: {
-    //    title: {
-    //      [Op.like]: `%${keyword}%`,
-    //    },
-    //  },
-    limit: Number(pageSize),
-    offset: Number((pageNo - 1) * pageSize),
-    order: [['id', 'desc']],
-  })
-  const count = result.count
-  const list = result.rows.map((item) => item.dataValues)
-  return result
-    ? new SuccessModel({
-        count,
-        list,
-      })
-    : new ErrorModel('获取列表失败')
+const getBlogs = async (pageNo, pageSize, classify) => {
+  //   let newClass = Array(classify)
+  //   console.log('测试打撒撒旦', classify)
+  if (classify == '[]') {
+    const result = await Blog.findAndCountAll({
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'userName', 'realName'],
+        },
+      ],
+      limit: Number(pageSize),
+      offset: Number((pageNo - 1) * pageSize),
+      order: [['id', 'desc']],
+    })
+    const count = result.count
+    const list = result.rows.map((item) => item.dataValues)
+    return result
+      ? new SuccessModel({
+          count,
+          list,
+        })
+      : new ErrorModel('获取列表失败')
+  } else {
+    let newClass = JSON.parse(classify)
+    //  console.log('csahdui是大坏蛋活塞is', newClass)
+    const result = await Blog.findAndCountAll({
+      where: {
+        classify: {
+          [Op.like]: `%${newClass}%`,
+        },
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'userName', 'realName'],
+        },
+      ],
+      limit: Number(pageSize),
+      offset: Number((pageNo - 1) * pageSize),
+      order: [['id', 'desc']],
+    })
+    const count = result.count
+    const list = result.rows.map((item) => item.dataValues)
+    return result
+      ? new SuccessModel({
+          count,
+          list,
+        })
+      : new ErrorModel('获取列表失败')
+  }
 }
 
 // 添加博客
 const appendBlog = async (data) => {
-  const { title, content, userId, imgUrl, classify, status } = data
+  const { title, content, userId, classify, imgUrl } = data
   const result = await Blog.create({
     title,
     content,
     userId,
     imgUrl,
     classify,
-    status,
+    createTime: Date.now(),
   })
   return result
     ? new SuccessModel(result.dataValues)
@@ -60,7 +92,7 @@ const getDetail = async (id) => {
 
 // 更新博客
 const updateBlog = async (id, data) => {
-  const { title, content, userId, imgUrl, classify, status, updatedAt } = data
+  const { title, content, userId, imgUrl, classify } = data
   const result = await Blog.update(
     {
       title,
@@ -68,8 +100,6 @@ const updateBlog = async (id, data) => {
       userId,
       imgUrl,
       classify,
-      status,
-      updatedAt,
     },
     {
       where: {
@@ -84,7 +114,7 @@ const updateBlog = async (id, data) => {
 const deleteBlog = async (id, userId) => {
   const result = await Blog.destroy({
     where: {
-      id,
+      id: id,
       userId,
     },
   })

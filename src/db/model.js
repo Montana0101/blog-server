@@ -42,6 +42,10 @@ const Blog = seq.define('blog', {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  createTime: {
+    type: Sequelize.BIGINT,
+    allowNull: true,
+  },
 })
 
 // 外键关联

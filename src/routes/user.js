@@ -8,6 +8,7 @@ const {
   userRegister,
   userLogin,
   getAdminInfo,
+  getAdminInfoTotal,
 } = require('../controller/user')
 
 router.prefix('/api/user')
@@ -30,7 +31,13 @@ router.post('/login', async (ctx, next) => {
 
 // 获取管理员信息
 router.get('/admin', async (ctx, next) => {
+  const { author, pageNo, pageSize } = ctx.request.query
+  ctx.body = await getAdminInfo(author, pageNo, pageSize)
+})
+
+// 获取管理员列表总数
+router.get('/admin/total', async (ctx, next) => {
   const { author } = ctx.request.query
-  ctx.body = await getAdminInfo(author)
+  ctx.body = await getAdminInfoTotal(author)
 })
 module.exports = router

@@ -10,8 +10,8 @@ const {
 router.prefix('/api/blog')
 
 router.get('/list', async (ctx, next) => {
-  const { pageNo, pageSize } = ctx.request.query
-  ctx.body = await getBlogs(pageNo, pageSize)
+  const { pageNo, pageSize, classify } = ctx.request.query
+  ctx.body = await getBlogs(pageNo, pageSize, classify)
 })
 
 router.get('/detail', async (ctx, next) => {
@@ -33,4 +33,5 @@ router.post('/delete', async (ctx, next) => {
   const { id, userId } = ctx.request.body
   ctx.body = await deleteBlog(id, userId)
 })
+
 module.exports = router
