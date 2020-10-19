@@ -5,13 +5,14 @@ const {
   getDetail,
   updateBlog,
   deleteBlog,
+  appendLearningRecord,
 } = require('../controller/blog')
 
 router.prefix('/api/blog')
 
 router.get('/list', async (ctx, next) => {
-  const { pageNo, pageSize, classify } = ctx.request.query
-  ctx.body = await getBlogs(pageNo, pageSize, classify)
+  const { pageNo, pageSize, classify, typeNo } = ctx.request.query
+  ctx.body = await getBlogs(pageNo, pageSize, classify, typeNo)
 })
 
 router.get('/detail', async (ctx, next) => {
@@ -32,6 +33,10 @@ router.post('/update', async (ctx, next) => {
 router.post('/delete', async (ctx, next) => {
   const { id, userId } = ctx.request.body
   ctx.body = await deleteBlog(id, userId)
+})
+
+router.post('/learn', async (ctx, next) => {
+  ctx.body = await appendLearningRecord(ctx.request.body)
 })
 
 module.exports = router

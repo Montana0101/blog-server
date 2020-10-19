@@ -4,11 +4,13 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
 // 获取博客列表
-const getBlogs = async (pageNo, pageSize, classify) => {
+const getBlogs = async (pageNo, pageSize, classify, typeNo = null) => {
   //   let newClass = Array(classify)
-  //   console.log('测试打撒撒旦', classify)
   if (classify == '[]') {
     const result = await Blog.findAndCountAll({
+      where: {
+        typeNo: typeNo,
+      },
       include: [
         {
           model: User,
@@ -29,9 +31,9 @@ const getBlogs = async (pageNo, pageSize, classify) => {
       : new ErrorModel('获取列表失败')
   } else {
     let newClass = JSON.parse(classify)
-    //  console.log('csahdui是大坏蛋活塞is', newClass)
     const result = await Blog.findAndCountAll({
       where: {
+        typeNo: typeNo,
         classify: {
           [Op.like]: `%${newClass}%`,
         },
@@ -121,10 +123,28 @@ const deleteBlog = async (id, userId) => {
   return new SuccessModel(result > 0 ? '删除成功' : '删除失败')
 }
 
+// 学习记录添加
+const appendLearningRecord = async (data) => {
+  const { title, content, userId, classify, imgUrl, typeNo } = data
+  const result = await Blog.create({
+    title,
+    content,
+    userId,
+    imgUrl,
+    classify,
+    typeNo,
+    createTime: Date.now(),
+  })
+  return result
+    ? new SuccessModel(result.dataValues)
+    : new ErrorModel('添加博客失败')
+}
+
 module.exports = {
   appendBlog,
   getBlogs,
   getDetail,
   updateBlog,
   deleteBlog,
+  appendLearningRecord,
 }

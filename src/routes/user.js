@@ -9,6 +9,7 @@ const {
   userLogin,
   getAdminInfo,
   getAdminInfoTotal,
+  recordAccessCount,
 } = require('../controller/user')
 
 router.prefix('/api/user')
@@ -39,5 +40,11 @@ router.get('/admin', async (ctx, next) => {
 router.get('/admin/total', async (ctx, next) => {
   const { author } = ctx.request.query
   ctx.body = await getAdminInfoTotal(author)
+})
+
+// 记录网站当前访问量
+router.post('/record/access', async (ctx, next) => {
+  const { count } = ctx.request.body
+  ctx.body = await recordAccessCount(count)
 })
 module.exports = router

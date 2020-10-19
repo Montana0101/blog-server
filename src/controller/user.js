@@ -85,10 +85,26 @@ const getAdminInfoTotal = async (author) => {
   })
 }
 
+// 记录网站当前访问量
+const recordAccessCount = async (count) => {
+  const result = await User.findOne()
+  count += Number(result.dataValues.accessRecord)
+  User.update(
+    {
+      accessRecord: count,
+    },
+    {
+      where: {},
+    }
+  )
+  return new SuccessModel(count)
+}
+
 module.exports = {
   isExist,
   userRegister,
   userLogin,
   getAdminInfo,
   getAdminInfoTotal,
+  recordAccessCount,
 }

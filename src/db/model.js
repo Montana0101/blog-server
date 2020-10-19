@@ -15,6 +15,10 @@ const User = seq.define('user', {
     allowNull: true,
     comment: 'User测试备注',
   },
+  accessRecord: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
 })
 
 const Blog = seq.define('blog', {
@@ -43,6 +47,14 @@ const Blog = seq.define('blog', {
     allowNull: true,
   },
   createTime: {
+    type: Sequelize.BIGINT,
+    allowNull: true,
+  },
+  accessRecord: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  typeNo: {
     type: Sequelize.BIGINT,
     allowNull: true,
   },
